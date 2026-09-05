@@ -58,3 +58,36 @@ def create_churn_label(
     labels["churn"] = (~labels["customer_id"].isin(active_customers)).astype(int)
 
     return labels
+
+
+# Rebuild the dataset
+import pandas as pd
+
+from features import create_churn_label, create_features
+
+transactions = pd.read_csv("data/raw/transactions.csv")
+
+features = create_features(transactions)
+
+labels = create_churn_label(transactions)
+
+dataset = features.merge(labels, on="customer_id", how="inner")
+
+dataset.to_csv("data/processed/churn_dataset.csv", index=False)
+
+print(dataset.head())
+
+print("\nShape:")
+print(dataset.shape)
+
+print("\nChurn distribution:")
+print(dataset["churn"].value_counts())
+
+print("\nChurn rate:")
+print(dataset["churn"].mean())
+
+print("\nDays since last transaction by churn:")
+print(
+    dataset.groupby("churn")["days_since_last_transaction"]
+    .agg(["count", "mean", "median", "min", "max"])
+)
