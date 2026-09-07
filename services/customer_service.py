@@ -1,5 +1,6 @@
 
 from services.analytics_service import calculate_customer_metrics
+from services.explanation_service import explain_churn
 from services.prediction_service import predict_churn
 
 
@@ -33,6 +34,7 @@ def get_customer_profile(customer_id):
     # 3. Predict churn risk
     # --------------------------------------------------
     prediction = predict_churn(prediction_features)
+    explanation = explain_churn(prediction_features)
 
     # --------------------------------------------------
     # 4. Combine everything
@@ -40,4 +42,5 @@ def get_customer_profile(customer_id):
     return {
         "customer": metrics,
         "churn_prediction": prediction,
+        "explanation": explanation,
     }
